@@ -28,7 +28,10 @@
                         <th scope="col">ID</th>
                         <th scope="col">Название</th>
                         <th scope="col">Дата создания</th>
-                        <th scope="col">Действия</th>  <!-- Новый столбец для действий -->
+                        <th scope="col">Статус</th>
+                        {% if user.is_authenticated %} <!-- Проверка авторизации -->
+                        <th scope="col">Действия</th>
+                        {% endif %}
                     </tr>
                     </thead>
                     <tbody>
@@ -38,9 +41,18 @@
                         <td><a href="{% url 'edit_snippet' snippet.id %}">{{ snippet.title }}</a></td>
                         <td>{{ snippet.created_at }}</td>
                         <td>
+                            {% if snippet.is_public %}
+                                Публичный
+                            {% else %}
+                                Частный
+                            {% endif %}
+                        </td>
+                        {% if user.is_authenticated and snippet.user == user %} <!-- Проверка на владельца и авторизацию -->
+                        <td>
                             <a href="{% url 'edit_snippet' snippet.id %}" class="btn btn-warning btn-sm">Редактировать</a>
                             <a href="{% url 'delete_snippet' snippet.id %}" class="btn btn-danger btn-sm">Удалить</a>
                         </td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                     </tbody>
@@ -52,3 +64,4 @@
         </div>
     </div>
 {% endblock %}
+

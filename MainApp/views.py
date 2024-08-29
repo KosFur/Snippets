@@ -3,11 +3,20 @@ from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404, redirect
 from .models import Snippet
 from django import forms
+from django.contrib.auth.decorators import login_required
+from .forms import SignUpForm
+from django.contrib.auth import login, authenticate
+
+@login_required
+def my_snippets_page(request):
+    snippets = Snippet.objects.filter(user=request.user)  
+    return render(request, 'pages/view_snippets.html', {'snippets': snippets, 'pagename': 'Мои сниппеты'})
+
 
 class SnippetForm(forms.ModelForm):
     class Meta:
         model = Snippet
-        fields = ['title', 'code', 'description']  # Убедитесь, что эти поля соответствуют вашей модели
+        fields = ['title', 'code', 'description', 'is_public'] 
 
 def edit_snippet(request, id):
     snippet = get_object_or_404(Snippet, id=id)
@@ -31,10 +40,28 @@ def add_snippet_page(request):
 
 
 def snippets_page(request):
-    context = {'pagename': 'Просмотр сниппетов'}
-    return render(request, 'pages/view_snippets.html', context)
+    if request.user.is_authenticated:
+        snippets = Snippet.objects.filter(is_public=True) | Snippet.objects.filter(user=request.user)
+    else:
+        snippets = Snippet.objects.filter(is_public=True)  
+    return render(request, 'pages/view_snippets.html', {'snippets': snippets, 'pagename': 'Все сниппеты'})
 
 def delete_snippet(request, id):
     snippet = get_object_or_404(Snippet, id=id)
     snippet.delete()
     return redirect('list_snippets')
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            user.refresh_from_db()  
+            user.save()
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=user.username, password=raw_password)
+            login(request, user)
+            return redirect('index')
+    else:
+        form = SignUpForm()
+    return render(request, 'registration/signup.html', {'form': form})
