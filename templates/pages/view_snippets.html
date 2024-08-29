@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load highlight %}
 
 {% block title %}
     Список сниппетов - PythonBin
@@ -16,6 +17,7 @@
         <div class="row">
             <div class="col">
                 <p>На данной странице будут отображаться все созданные сниппеты.</p>
+                <p>Пока тут просто пример, но скоро заменим реальными сниппетами из БД!</p>
                 <hr>
             </div>
         </div>
@@ -28,40 +30,34 @@
                         <th scope="col">ID</th>
                         <th scope="col">Название</th>
                         <th scope="col">Дата создания</th>
-                        <th scope="col">Статус</th>
-                        {% if user.is_authenticated %} <!-- Проверка авторизации -->
-                        <th scope="col">Действия</th>
-                        {% endif %}
                     </tr>
                     </thead>
                     <tbody>
                     {% for snippet in snippets %}
                     <tr>
                         <td scope="row">{{ snippet.id }}</td>
-                        <td><a href="{% url 'edit_snippet' snippet.id %}">{{ snippet.title }}</a></td>
+                        <td><a href="{% url 'snippet_detail' snippet.id %}">{{ snippet.title }}</a></td>
                         <td>{{ snippet.created_at }}</td>
-                        <td>
-                            {% if snippet.is_public %}
-                                Публичный
-                            {% else %}
-                                Частный
-                            {% endif %}
-                        </td>
-                        {% if user.is_authenticated and snippet.user == user %} <!-- Проверка на владельца и авторизацию -->
-                        <td>
-                            <a href="{% url 'edit_snippet' snippet.id %}" class="btn btn-warning btn-sm">Редактировать</a>
-                            <a href="{% url 'delete_snippet' snippet.id %}" class="btn btn-danger btn-sm">Удалить</a>
-                        </td>
-                        {% endif %}
                     </tr>
                     {% endfor %}
                     </tbody>
                 </table>
                 <div align="right">
-                    <i style="color: gray;">Всего сниппетов: {{ snippets|length }}</i>
+                    <i style="color: gray;">Всего сниппетов: {{ snippets.count }}</i>
                 </div>
             </div>
         </div>
+
+        
+        {% if snippet %}
+        <div class="row mt-4">
+            <div class="col">
+                <h3>{{ snippet.title }}</h3>
+                <pre>
+                    {{ snippet.code|syntax_highlight:snippet.language }}
+                </pre>
+            </div>
+        </div>
+        {% endif %}
     </div>
 {% endblock %}
-

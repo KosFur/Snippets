@@ -6,6 +6,7 @@ from django import forms
 from django.contrib.auth.decorators import login_required
 from .forms import SignUpForm
 from django.contrib.auth import login, authenticate
+from django.contrib import messages
 
 @login_required
 def my_snippets_page(request):
@@ -35,9 +36,11 @@ def index_page(request):
 
 
 def add_snippet_page(request):
-    context = {'pagename': 'Добавление нового сниппета'}
-    return render(request, 'pages/add_snippet.html', context)
-
+    if request.method == 'POST':
+        messages.success(request, 'Сниппет успешно создан!')
+        return redirect('list_snippets')
+    else:
+        return render(request, 'pages/add_snippet.html')
 
 def snippets_page(request):
     if request.user.is_authenticated:
