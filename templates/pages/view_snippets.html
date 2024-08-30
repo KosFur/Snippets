@@ -27,7 +27,7 @@
                     {% for snippet in snippets %}
                     <tr>
                         <td>{{ snippet.id }}</td>
-
+                        <td><a href="{% url 'snippet_detail' id=snippet.id %}">{{ snippet.name }}</a></td>
                         <td>{{ snippet.created_at }}</td>
                     </tr>
                     {% empty %}
