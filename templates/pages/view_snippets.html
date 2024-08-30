@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load highlight %}
 
 {% block title %}
     Список сниппетов - PythonBin
@@ -9,15 +8,7 @@
     <div class="container">
         <div class="row">
             <div class="col text-center">
-                <h1>{{ pagename }}</h1>
-                <hr>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col">
-                <p>На данной странице будут отображаться все созданные сниппеты.</p>
-                <p>Пока тут просто пример, но скоро заменим реальными сниппетами из БД!</p>
+                <h1>Список сниппетов</h1>
                 <hr>
             </div>
         </div>
@@ -35,9 +26,13 @@
                     <tbody>
                     {% for snippet in snippets %}
                     <tr>
-                        <td scope="row">{{ snippet.id }}</td>
-                        <td><a href="{% url 'snippet_detail' snippet.id %}">{{ snippet.title }}</a></td>
+                        <td>{{ snippet.id }}</td>
+
                         <td>{{ snippet.created_at }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">Нет доступных сниппетов</td>
                     </tr>
                     {% endfor %}
                     </tbody>
@@ -47,17 +42,5 @@
                 </div>
             </div>
         </div>
-
-        
-        {% if snippet %}
-        <div class="row mt-4">
-            <div class="col">
-                <h3>{{ snippet.title }}</h3>
-                <pre>
-                    {{ snippet.code|syntax_highlight:snippet.language }}
-                </pre>
-            </div>
-        </div>
-        {% endif %}
     </div>
 {% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Детали сниппета - {{ snippet.name }}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>{{ snippet.name }}</h1>
+        <p>Создано: {{ snippet.created_at }}</p>
+        <p>{{ snippet.description }}</p>
+        <p>{{ snippet.code }}</p>
+        <a href="{% url 'list_snippets' %}">Назад к списку</a>
+    </div>
+{% endblock %}
