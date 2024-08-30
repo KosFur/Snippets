@@ -31,11 +31,11 @@ def add_snippet_page(request):
         form = SnippetForm()
     return render(request, 'pages/add_snippet.html', {'form': form})
 
+
+
 @login_required
 def edit_snippet(request, id):
-    snippet = Snippet.objects.get(id=id)
-    if snippet.user != request.user:
-        return redirect('list_snippets')
+    snippet = get_object_or_404(Snippet, id=id)
 
     if request.method == 'POST':
         form = SnippetForm(request.POST, instance=snippet)
@@ -49,11 +49,14 @@ def edit_snippet(request, id):
 
 @login_required
 def delete_snippet(request, id):
-    snippet = Snippet.objects.get(id=id)
-    if snippet.user == request.user:
+    snippet = get_object_or_404(Snippet, id=id)
+
+    if request.method == 'POST':
         snippet.delete()
         messages.success(request, 'Сниппет успешно удален!')
-    return redirect('list_snippets')
+        return redirect('list_snippets')
+
+    return render(request, 'pages/delete_confirmation.html', {'snippet': snippet})
 
 @login_required
 def my_snippets_page(request):
